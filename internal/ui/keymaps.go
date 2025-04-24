@@ -1,8 +1,8 @@
-package main
+package ui
 
 import "github.com/charmbracelet/bubbles/key"
 
-type VisualizationKeyMap struct {
+type VisualizationKeyMapStruct struct {
 	Start key.Binding
 	Stop  key.Binding
 	Reset key.Binding
@@ -10,13 +10,13 @@ type VisualizationKeyMap struct {
 	Quit  key.Binding
 }
 
-type MenuKeyMap struct {
+type MenuKeyMapStruct struct {
 	Up     key.Binding
 	Down   key.Binding
 	Select key.Binding
 }
 
-var visualizationKeyMap = VisualizationKeyMap{
+var VisualizationKeyMap = VisualizationKeyMapStruct{
 	Start: key.NewBinding(
 		key.WithKeys("s"),
 		key.WithHelp("s", "start sorting"),
@@ -39,15 +39,15 @@ var visualizationKeyMap = VisualizationKeyMap{
 	),
 }
 
-func (v VisualizationKeyMap) ShortHelp() []key.Binding {
+func (v VisualizationKeyMapStruct) ShortHelp() []key.Binding {
 	return []key.Binding{v.Start, v.Stop, v.Reset, v.Back, v.Quit}
 }
 
-func (v VisualizationKeyMap) FullHelp() [][]key.Binding {
+func (v VisualizationKeyMapStruct) FullHelp() [][]key.Binding {
 	return [][]key.Binding{{v.Start, v.Stop, v.Reset, v.Back, v.Quit}}
 }
 
-var menuKeyMap = MenuKeyMap{
+var MenuKeyMap = MenuKeyMapStruct{
 	Up: key.NewBinding(
 		key.WithKeys("w", "up"),
 		key.WithHelp("↑/w", "move up"),

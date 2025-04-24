@@ -1,42 +1,42 @@
-package main
+package ui
 
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	appStyle = lipgloss.NewStyle().
+	AppStyle = lipgloss.NewStyle().
 		Padding(1, 2)
 
-	titleStyle = lipgloss.NewStyle().
+	TitleStyle = lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("#c27aff")).
 		Padding(0, 2)
 
-	statsStyle = lipgloss.NewStyle().
+	StatsStyle = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("#c27aff")).
 		Padding(1, 2).
 		Width(30).
 		BorderTop(false)
 
-	helpStyle = lipgloss.NewStyle().
+	HelpStyle = lipgloss.NewStyle().
 		PaddingLeft(4).
 		PaddingBottom(1)
 
-	windowStyle = lipgloss.NewStyle().
+	WindowStyle = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("#c27aff")).
 		Padding(0, 1).
 		BorderTop(false)
 
-	windowTitleStyle = lipgloss.NewStyle().
+	WindowTitleStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#c27aff"))
 
-	axisStyle = lipgloss.NewStyle().
+	AxisStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("5"))
 
-	blockStyle = lipgloss.NewStyle().
+	BlockStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#fff"))
 
-	activeBlockStyle = lipgloss.NewStyle().
+	ActiveBlockStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#ff6467"))
 )
