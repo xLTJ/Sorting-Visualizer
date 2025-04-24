@@ -24,12 +24,19 @@ func (m Model) View() string {
 
 func (m Model) visualizationView() string {
 	graphFrameW, _ := ui.WindowStyle.GetFrameSize()
+	blockStyle := ui.InactiveBlockStyle
+	swappedBlockStyle := ui.SwappedBlockStyle
+	comparedBlockStyle := ui.ComparedBlockStyle
 
 	statusText := "Waiting..."
 	if m.sorting {
 		statusText = "Sorting..."
+		blockStyle = ui.BlockStyle
 	} else if m.sortState.IsSorted() {
 		statusText = "Sorting complete ^~^"
+		blockStyle = ui.SortedBlockStyle
+		swappedBlockStyle = ui.SortedBlockStyle
+		comparedBlockStyle = ui.SortedBlockStyle
 	}
 
 	m.canvas.Clear()
@@ -39,19 +46,34 @@ func (m Model) visualizationView() string {
 	columns := make([]float64, contants.ArraySize)
 	for i, val := range m.sortState.GetArray() {
 		// if index is active, skip to draw later
-		if slices.Contains(m.sortState.GetActiveIndices(), i) {
+		if slices.Contains(m.sortState.GetSwappedIndices(), i) || slices.Contains(m.sortState.GetComparedIndices(), i) {
 			columns[i] = 0
 			continue
 		}
 		columns[i] = val * float64(m.canvas.ViewHeight) / contants.ArraySize
 	}
 
-	// draw columns
-	graph.DrawColumns(&m.canvas, axisPoint, columns, ui.BlockStyle)
-	for _, arrayIndex := range m.sortState.GetActiveIndices() {
+	// draw compared columns
+	for _, arrayIndex := range m.sortState.GetComparedIndices() {
+		if arrayIndex < 0 || arrayIndex > contants.ArraySize-1 {
+			continue
+		}
+
 		point := axisPoint.Add(canvas.Point{X: arrayIndex})
 		scaledHeight := m.sortState.GetArray()[arrayIndex] * float64(m.canvas.ViewHeight) / contants.ArraySize
-		graph.DrawColumns(&m.canvas, point, []float64{scaledHeight}, ui.ActiveBlockStyle)
+		graph.DrawColumns(&m.canvas, point, []float64{scaledHeight}, comparedBlockStyle)
+	}
+
+	// draw swapped columns
+	graph.DrawColumns(&m.canvas, axisPoint, columns, blockStyle)
+	for _, arrayIndex := range m.sortState.GetSwappedIndices() {
+		if arrayIndex < 0 || arrayIndex > contants.ArraySize-1 {
+			continue
+		}
+
+		point := axisPoint.Add(canvas.Point{X: arrayIndex})
+		scaledHeight := m.sortState.GetArray()[arrayIndex] * float64(m.canvas.ViewHeight) / contants.ArraySize
+		graph.DrawColumns(&m.canvas, point, []float64{scaledHeight}, swappedBlockStyle)
 	}
 
 	graphTitle := fmt.Sprintf("╭───┤ %s - %s ├", m.sortState.GetName(), statusText)

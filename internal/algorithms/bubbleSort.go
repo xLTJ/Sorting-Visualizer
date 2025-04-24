@@ -26,15 +26,19 @@ func (s SortStateBubbleSort) SortStep() SortStateInterface {
 	if s.sorted {
 		return s
 	}
-	
+
+	s.comparedIndices = []int{}
+	s.swappedIndices = []int{}
+
 	arr := s.array
 	n := len(arr)
 	i, j := s.i, s.j
 
-	s.activeIndices = []int{j, j + 1}
+	s.comparedIndices = []int{j, j + 1}
 
 	if arr[j] > arr[j+1] {
 		arr[j], arr[j+1] = arr[j+1], arr[j]
+		s.swappedIndices = []int{j, j + 1}
 		s.swaps++
 	}
 	s.comparisons++

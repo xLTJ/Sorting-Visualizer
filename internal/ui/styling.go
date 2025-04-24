@@ -37,6 +37,15 @@ var (
 	BlockStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#fff"))
 
-	ActiveBlockStyle = lipgloss.NewStyle().
+	SwappedBlockStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#ff6467"))
+
+	ComparedBlockStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#8ec5ff"))
+
+	SortedBlockStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#b9f8cf"))
+
+	InactiveBlockStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#737373"))
 )

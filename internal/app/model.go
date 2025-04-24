@@ -45,7 +45,8 @@ func (i item) FilterValue() string { return i.title }
 func NewModel() Model {
 	listItems := []list.Item{
 		item{title: "Bubble Sort", desc: "Bubble sort is one of the simplest sorting algorithms of all time. Its also really bad."},
-		item{title: "Insetion Sort", desc: "Its insertion sort, it... inserts things :pray:"},
+		item{title: "Insertion Sort", desc: "Its insertion sort, it... inserts things :pray:"},
+		item{title: "Selection Sort", desc: "Its selecting time"},
 	}
 
 	algorithmList := list.New(listItems, list.NewDefaultDelegate(), 0, 0)
