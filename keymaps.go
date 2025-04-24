@@ -4,6 +4,7 @@ import "github.com/charmbracelet/bubbles/key"
 
 type VisualizationKeyMap struct {
 	Start key.Binding
+	Stop  key.Binding
 	Reset key.Binding
 	Back  key.Binding
 	Quit  key.Binding
@@ -20,9 +21,13 @@ var visualizationKeyMap = VisualizationKeyMap{
 		key.WithKeys("s"),
 		key.WithHelp("s", "start sorting"),
 	),
+	Stop: key.NewBinding(
+		key.WithKeys("x"),
+		key.WithHelp("x", "stop sorting"),
+	),
 	Reset: key.NewBinding(
 		key.WithKeys("r"),
-		key.WithHelp("s", "reset array"),
+		key.WithHelp("r", "reset array"),
 	),
 	Back: key.NewBinding(
 		key.WithKeys("b"),
@@ -35,11 +40,11 @@ var visualizationKeyMap = VisualizationKeyMap{
 }
 
 func (v VisualizationKeyMap) ShortHelp() []key.Binding {
-	return []key.Binding{v.Start, v.Reset, v.Back, v.Quit}
+	return []key.Binding{v.Start, v.Stop, v.Reset, v.Back, v.Quit}
 }
 
 func (v VisualizationKeyMap) FullHelp() [][]key.Binding {
-	return [][]key.Binding{{v.Start, v.Reset, v.Back, v.Quit}}
+	return [][]key.Binding{{v.Start, v.Stop, v.Reset, v.Back, v.Quit}}
 }
 
 var menuKeyMap = MenuKeyMap{

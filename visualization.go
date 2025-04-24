@@ -7,6 +7,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"slices"
 	"strings"
 )
 
@@ -21,15 +22,18 @@ func (m model) updateVisualization(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, visualizationKeyMap.Reset):
 			m.sorting = false
-			m.sortState = newSortState()
+			m.sortState = m.sortState.reset()
 			return m, nil
 
 		case key.Matches(msg, visualizationKeyMap.Start):
-			if !m.sortState.sorted {
+			if !m.sortState.isSorted() {
 				m.sorting = true
 				return m, tick()
 			}
 
+		case key.Matches(msg, visualizationKeyMap.Stop):
+			m.sorting = false
+			return m, nil
 		}
 	}
 
@@ -45,33 +49,42 @@ func (m model) visualizationView() string {
 	statusText := "Waiting..."
 	if m.sorting {
 		statusText = "Sorting..."
-	} else if m.sortState.sorted {
+	} else if m.sortState.isSorted() {
 		statusText = "Sorting complete ^~^"
 	}
 
-	// chart axis
 	m.canvas.Clear()
 	axisPoint := canvas.Point{X: 0, Y: m.canvas.ViewHeight}
-	//graph.DrawXYAxis(&m.canvas, axisPoint, axisStyle)
 
 	// scaling graph so it actually fits on the terminal
 	columns := make([]float64, arraySize)
-	for i, val := range m.sortState.array {
+	for i, val := range m.sortState.getArray() {
+		// if index is active, skip to draw later
+		if slices.Contains(m.sortState.getActiveIndices(), i) {
+			columns[i] = 0
+			continue
+		}
 		columns[i] = val * float64(m.canvas.ViewHeight) / arraySize
 	}
 
+	// draw columns
 	graph.DrawColumns(&m.canvas, axisPoint, columns, blockStyle)
+	for _, arrayIndex := range m.sortState.getActiveIndices() {
+		point := axisPoint.Add(canvas.Point{X: arrayIndex})
+		scaledHeight := m.sortState.getArray()[arrayIndex] * float64(m.canvas.ViewHeight) / arraySize
+		graph.DrawColumns(&m.canvas, point, []float64{scaledHeight}, activeBlockStyle)
+	}
 
-	graphTitle := fmt.Sprintf("╭───┤ %s - %s ├", m.algorithm, statusText)
+	graphTitle := fmt.Sprintf("╭───┤ %s - %s ├", m.sortState.getName(), statusText)
 	graphLine := strings.Repeat("─", max(0, lipgloss.Width(m.canvas.View())-lipgloss.Width(graphTitle)+graphFrameW-1))
 	graphUpperBorder := lipgloss.JoinHorizontal(lipgloss.Center, graphTitle, graphLine)
 
 	stats := statsStyle.Render(fmt.Sprintf(
 		"Algorithm: %s\n\nComparisons: %d\nSwaps: %d\nArray Size: %d",
-		m.algorithm,
-		m.sortState.comparisons,
-		m.sortState.swaps,
-		len(m.sortState.array),
+		m.sortState.getName(),
+		m.sortState.getComparisons(),
+		m.sortState.getSwaps(),
+		len(m.sortState.getArray()),
 	))
 
 	statsTitle := "╭───┤ Stats ├"

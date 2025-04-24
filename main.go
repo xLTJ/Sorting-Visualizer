@@ -19,15 +19,19 @@ const (
 
 const (
 	arraySize = 100
-	sortDelay = 1
+	sortDelay = 0
 )
 
-type Algorithm string
+//type Algorithm string
+//
+//const (
+//	BubbleSort    Algorithm = "Bubble Sort"
+//	SelectionSort Algorithm = "Selection Sort"
+//)
 
-const (
-	BubbleSort    Algorithm = "Bubble Sort"
-	SelectionSort Algorithm = "Selection Sort"
-)
+var algorithmMap = map[string]func() SortStateInterface{
+	"Bubble Sort": newSortStateBubbleSort,
+}
 
 // states -------------------------------------------------------------------------------------------------------
 
@@ -35,33 +39,45 @@ type model struct {
 	state     int
 	help      help.Model
 	list      list.Model
-	algorithm Algorithm // algorithm currently used
 	sorting   bool
 	canvas    canvas.Model
-	sortState SortState
+	sortState SortStateInterface
 }
 
-func newSortState() SortState {
-	return SortState{
-		i:             0,
-		j:             0,
+type SortStateInterface interface {
+	getComparisons() int
+	getSwaps() int
+	isSorted() bool
+	getActiveIndices() []int
+	getArray() []float64
+
+	getName() string
+	reset() SortStateInterface
+	sortStep() SortStateInterface
+}
+
+type SortStateBase struct {
+	comparisons   int       // total comparisons
+	swaps         int       // total swaps
+	sorted        bool      // whether the array has finished sorted
+	activeIndices []int     // Indices currently being swapped or compared
+	array         []float64 // the array being sorted
+}
+
+func (s SortStateBase) getComparisons() int     { return s.comparisons }
+func (s SortStateBase) getSwaps() int           { return s.swaps }
+func (s SortStateBase) isSorted() bool          { return s.sorted }
+func (s SortStateBase) getActiveIndices() []int { return s.activeIndices }
+func (s SortStateBase) getArray() []float64     { return s.array }
+
+func newBaseSortState() SortStateBase {
+	return SortStateBase{
 		comparisons:   0,
 		swaps:         0,
 		sorted:        false,
 		activeIndices: []int{},
 		array:         generateShuffledArray(arraySize),
 	}
-}
-
-// SortState probably has to be expanded for more advanced algorithms but i can just add that later
-type SortState struct {
-	i             int       // out loop index
-	j             int       // inner loop index
-	comparisons   int       // total comparisons
-	swaps         int       // total swaps
-	sorted        bool      // whether the array has finished sorted
-	activeIndices []int     // Indices currently being swapped or compared
-	array         []float64 // the array being sorted
 }
 
 // setup ---------------------------------------------------------------------------------------------------
@@ -102,10 +118,9 @@ func newModel() model {
 		state:     stateMenu,
 		help:      help.New(),
 		list:      algorithmList,
-		algorithm: BubbleSort,
 		sorting:   false,
 		canvas:    visualizationCanvas,
-		sortState: newSortState(),
+		sortState: newSortStateBubbleSort(),
 	}
 }
 
@@ -138,21 +153,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tickMsg:
-		if !m.sorting && m.sortState.sorted {
+		if !m.sorting || m.sortState.isSorted() {
 			break
 		}
 
-		switch m.algorithm {
-		case BubbleSort:
-			newState := bubbleSortStep(m.sortState)
-			m.sortState = newState
+		newState := m.sortState.sortStep()
+		m.sortState = newState
 
-			if !m.sortState.sorted {
-				return m, tick()
-			}
-			m.sorting = false
-			m.sortState.activeIndices = []int{}
+		if !m.sortState.isSorted() {
+			return m, tick()
 		}
+		m.sorting = false
 	}
 
 	// specific state updates
@@ -172,9 +183,8 @@ func (m model) updateMenu(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, menuKeyMap.Select):
 			if i, ok := m.list.SelectedItem().(item); ok {
-				m.algorithm = Algorithm(i.Title())
 				m.state = stateVisualization
-				m.sortState = newSortState()
+				m.sortState = algorithmMap[i.title]()
 				return m, nil
 			}
 
@@ -210,8 +220,8 @@ func (m model) View() string {
 
 func generateShuffledArray(size int) []float64 {
 	array := make([]float64, size)
-	for i := 0; i < size; i++ {
-		array[i] = float64(i)
+	for i := 1; i <= size; i++ {
+		array[i-1] = float64(i)
 	}
 	for i := range array {
 		j := rand.Intn(i + 1)

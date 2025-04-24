@@ -1,21 +1,47 @@
 package main
 
-func bubbleSortStep(state SortState) SortState {
-	array := state.array
-	n := len(array)
-	i, j := state.i, state.j
+type SortStateBubbleSort struct {
+	SortStateBase
+	i int
+	j int
+}
 
-	if state.sorted {
-		return state
+func newSortStateBubbleSort() SortStateInterface {
+	return SortStateBubbleSort{
+		i:             0,
+		j:             0,
+		SortStateBase: newBaseSortState(),
+	}
+}
+
+func (s SortStateBubbleSort) reset() SortStateInterface {
+	return SortStateBubbleSort{
+		i:             0,
+		j:             0,
+		SortStateBase: newBaseSortState(),
+	}
+}
+
+func (s SortStateBubbleSort) getName() string {
+	return "Bubble Sort"
+}
+
+func (s SortStateBubbleSort) sortStep() SortStateInterface {
+	arr := s.array
+	n := len(arr)
+	i, j := s.i, s.j
+
+	if s.sorted {
+		return s
 	}
 
-	state.activeIndices = []int{j, j + 1}
+	s.activeIndices = []int{j, j + 1}
 
-	if array[j] > array[j+1] {
-		array[j], array[j+1] = array[j+1], array[j]
-		state.swaps++
+	if arr[j] > arr[j+1] {
+		arr[j], arr[j+1] = arr[j+1], arr[j]
+		s.swaps++
 	}
-	state.comparisons++
+	s.comparisons++
 
 	j++
 	if j >= n-i-1 {
@@ -24,11 +50,25 @@ func bubbleSortStep(state SortState) SortState {
 	}
 
 	if i >= n-1 {
-		state.sorted = true
+		s.sorted = true
 	}
 
-	state.i = i
-	state.j = j
-
-	return state
+	s.i, s.j = i, j
+	return s
 }
+
+type SortStateInsertionSort struct {
+	SortStateBase
+	i int
+	j int
+}
+
+//
+//func insertionSortStep(state SortState) SortState {
+//	// grabs current state
+//	arr := state.array
+//	n := len(arr)
+//	i, j := state.i, state.j
+//
+//	key := arr[i]
+//}

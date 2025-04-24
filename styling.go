@@ -4,36 +4,39 @@ import "github.com/charmbracelet/lipgloss"
 
 var (
 	appStyle = lipgloss.NewStyle().
-			Padding(1, 2)
+		Padding(1, 2)
 
 	titleStyle = lipgloss.NewStyle().
-			Bold(true).
-			Foreground(lipgloss.Color("#7D56F4")).
-			Padding(0, 2)
+		Bold(true).
+		Foreground(lipgloss.Color("#c27aff")).
+		Padding(0, 2)
 
 	statsStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#7D56F4")).
-			Padding(1, 2).
-			Width(30).
-			BorderTop(false)
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#c27aff")).
+		Padding(1, 2).
+		Width(30).
+		BorderTop(false)
 
 	helpStyle = lipgloss.NewStyle().
-			PaddingLeft(4).
-			PaddingBottom(1)
+		PaddingLeft(4).
+		PaddingBottom(1)
 
 	windowStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#7D56F4")).
-			Padding(0, 1).
-			BorderTop(false)
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#c27aff")).
+		Padding(0, 1).
+		BorderTop(false)
 
 	windowTitleStyle = lipgloss.NewStyle().
-				Foreground(lipgloss.Color("#7D56F4"))
+		Foreground(lipgloss.Color("#c27aff"))
 
 	axisStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("5"))
+		Foreground(lipgloss.Color("5"))
 
 	blockStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("6"))
+		Foreground(lipgloss.Color("#fff"))
+
+	activeBlockStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#ff6467"))
 )
